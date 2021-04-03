@@ -83,7 +83,7 @@ def sort_score(scores):
             "page_id": page_id,
             "score": score
         })
-    score_array.sort(key=lambda x: x["score"])
+    score_array.sort(key=lambda x: x["score"], reverse=True)
     return score_array
 
 
@@ -98,7 +98,7 @@ def search(keyword):
 
 
 # %%
-search("テスト")
+
 
 
 # %%
