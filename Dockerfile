@@ -22,9 +22,7 @@ RUN pip3 install beautifulsoup4==4.9.3 \
   uvicorn==0.13.4
 ADD . /workdir
 WORKDIR /workdir
-RUN python3 download.py
-RUN python3 gen_wordtable.py
-RUN python3 gen_wordtable_event.py
+RUN python3 download.py && python3 gen_wordtable.py && python3 gen_wordtable_event.py
 
 EXPOSE 8000
 CMD ["uvicorn","app:app","--host","0.0.0.0"]
