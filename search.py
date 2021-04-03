@@ -127,7 +127,7 @@ def search(keyword):
 # %%
 def random_org(n=15):
     with open("pages.pickle", "rb") as f:
-        return random.choices(pickle.load(f), k=n)
+        return random.sample([p for p in pickle.load(f) if p["status"] == "publish"], k=n)
 
 
 # %%

@@ -49,6 +49,7 @@ def load_tables():
                     "start": page["event"]["start"][i],
                     "end": page["event"]["end"][i],
                     "page_id": page_id,
+                    "description": page["event"]["description"][i],
                     "page": page
                 }
 

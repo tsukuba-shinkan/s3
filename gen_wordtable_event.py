@@ -57,7 +57,7 @@ len(pages)
 
 # %%
 def get_event_id(page_id, event_index):
-    return page_id*1000 + event_index
+    return page_id*1919 + event_index
 
 
 # %%
