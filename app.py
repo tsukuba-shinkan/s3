@@ -14,10 +14,8 @@ def searchOrgs(q: str):
 
 
 @app.get("/search/events")
-def searchEvents(q: str):
-  if len(q) == 0:
-    return []
-  return search_event.search(q)
+def searchEvents(q: str, rangestart:str="2021-04-01", rangeend:str="2021-12-31"):
+  return search_event.search(q,rangestart=rangestart, rangeend=rangeend)
 
 @app.get("/random/org")
 def randomOrg(n: int = 15):

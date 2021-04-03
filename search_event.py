@@ -4,6 +4,7 @@
 import pickle
 import MeCab
 import time
+from datetime import datetime
 
 
 # %%
@@ -45,7 +46,8 @@ def load_tables():
                 event_id = get_event_id(page_id, i)
                 event_dict[event_id] = {
                     "title": page["event"]["title"][i],
-                    "start": page["event"]["start"][i],"end": page["event"]["end"][i],
+                    "start": page["event"]["start"][i],
+                    "end": page["event"]["end"][i],
                     "page_id": page_id,
                     "page": page
                 }
@@ -128,9 +130,10 @@ def reload():
 
 
 # %%
-def search(keyword):
+def keyword_search(keyword):
     if len(keyword) == 0:
         return
+    reload()
     scores = scored_search(keyword)
     scores = [event_dict[s["event_id"]] for s in sort_score(scores)]
     return scores
@@ -138,6 +141,36 @@ def search(keyword):
 
 
 # %%
+def filter_by_date(events, a,b):
+    # pass if a<start<b or a<end<b
+    a = datetime.fromisoformat(a)
+    b = datetime.fromisoformat(b)
+    result = []
+    for e in events:
+        try:
+            start = datetime.fromisoformat(e["start"])
+            end = datetime.fromisoformat(e["end"])
+            if a<start<b or a<end<b:
+                result.append(e)
+        except: 
+            continue
+    return result
 
+
+# %%
+def get_all():
+    global event_dict
+    return [i for i in event_dict.values()]
+
+
+# %%
+def search(keyword="", rangestart="2021-04-01", rangeend="2021-12-31"):
+    events = []
+    if len(keyword) == 0:
+        events = get_all()
+    else:
+        events = keyword_search(keyword)
+    return(filter_by_date(events, rangestart, rangeend))
+        
 
 
