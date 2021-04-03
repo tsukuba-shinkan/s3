@@ -3,6 +3,7 @@
 # %%
 import pickle
 import MeCab
+import time
 
 
 # %%
@@ -17,6 +18,37 @@ page_title_id_table = load_file("page_title_id_table")
 page_heading_id_table = load_file("page_heading_id_table")
 page_desc_id_table = load_file("page_desc_id_table")
 zenbun_table = load_file("zenbun_table")
+event_dict = {}
+
+
+# %%
+def load_tables():
+    global page_title_id_table
+    global page_desc_id_table
+    global page_heading_id_table
+    global zenbun_table
+    global word_table
+    
+    word_table = load_file("word_table")
+    page_title_id_table = load_file("page_title_id_table")
+    page_heading_id_table = load_file("page_heading_id_table")
+    page_desc_id_table = load_file("page_desc_id_table")
+    zenbun_table = load_file("zenbun_table")
+
+    global event_dict
+    with open("pages.pickle", "rb") as f:
+        for page in pickle.load(f):
+            page_id = page["id"]
+            if "title" not in page["event"]:
+                continue
+            for i in range(len(page["event"]["title"])):
+                event_id = get_event_id(page_id, i)
+                event_dict[event_id] = {
+                    "title": page["event"]["title"][i],
+                    "start": page["event"]["start"][i],"end": page["event"]["end"][i],
+                    "page_id": page_id,
+                    "page": page
+                }
 
 
 # %%
@@ -70,24 +102,7 @@ def scored_search(keyword):
 
 # %%
 def get_event_id(page_id, event_index):
-    return page_id*1000 + event_index
-
-
-# %%
-event_dict = {}
-with open("pages.pickle", "rb") as f:
-    for page in pickle.load(f):
-        page_id = page["id"]
-        if "title" not in page["event"]:
-            continue
-        for i in range(len(page["event"]["title"])):
-            event_id = get_event_id(page_id, i)
-            event_dict[event_id] = {
-                "title": page["event"]["title"][i],
-                "start": page["event"]["start"][i],"end": page["event"]["end"][i],
-                "page_id": page_id,
-                "page": page
-            }
+    return page_id*1919 + event_index
 
 
 # %%
@@ -98,8 +113,18 @@ def sort_score(scores):
             "event_id": page_id,
             "score": score
         })
-    score_array.sort(key=lambda x: x["score"])
+    score_array.sort(key=lambda x: x["score"], reverse=True)
     return score_array
+
+
+# %%
+currenttime = 0
+def reload():
+    global currenttime
+    if time.time() - currenttime < 5:
+        return
+    load_tables()
+    currenttime = time.time()
 
 
 # %%
@@ -110,10 +135,6 @@ def search(keyword):
     scores = [event_dict[s["event_id"]] for s in sort_score(scores)]
     return scores
     
-
-
-# %%
-search("ITF")
 
 
 # %%

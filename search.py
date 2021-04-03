@@ -3,6 +3,8 @@
 # %%
 import pickle
 import MeCab
+import time
+import random
 
 
 # %%
@@ -17,6 +19,27 @@ page_title_id_table = load_file("page_title_id_table")
 page_heading_id_table = load_file("page_heading_id_table")
 page_desc_id_table = load_file("page_desc_id_table")
 zenbun_table = load_file("zenbun_table")
+page_dict = {}
+
+
+# %%
+def load_tables():
+    global page_title_id_table
+    global page_desc_id_table
+    global page_heading_id_table
+    global zenbun_table
+    global word_table
+    global page_dict
+
+    word_table = load_file("word_table")
+    page_title_id_table = load_file("page_title_id_table")
+    page_heading_id_table = load_file("page_heading_id_table")
+    page_desc_id_table = load_file("page_desc_id_table")
+    zenbun_table = load_file("zenbun_table")
+
+    with open("pages.pickle", "rb") as f:
+        for page in pickle.load(f):
+            page_dict[page["id"]] = page
 
 
 # %%
@@ -69,13 +92,6 @@ def scored_search(keyword):
 
 
 # %%
-page_dict = {}
-with open("pages.pickle", "rb") as f:
-    for page in pickle.load(f):
-        page_dict[page["id"]] = page
-
-
-# %%
 def sort_score(scores):
     score_array = []
     for page_id, score in scores.items():
@@ -88,9 +104,20 @@ def sort_score(scores):
 
 
 # %%
+currenttime = 0
+def reload():
+    global currenttime
+    if time.time() - currenttime < 5:
+        return
+    load_tables()
+    currenttime = time.time()
+
+
+# %%
 def search(keyword):
     if len(keyword) == 0:
         return
+    reload()
     scores = scored_search(keyword)
     scores = [page_dict[s["page_id"]] for s in sort_score(scores)]
     return scores
@@ -98,7 +125,9 @@ def search(keyword):
 
 
 # %%
-
+def random_org(n=15):
+    with open("pages.pickle", "rb") as f:
+        return random.choices(pickle.load(f), k=n)
 
 
 # %%
