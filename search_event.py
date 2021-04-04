@@ -29,7 +29,7 @@ def load_tables():
     global page_heading_id_table
     global zenbun_table
     global word_table
-    
+
     word_table = load_file("word_table")
     page_title_id_table = load_file("page_title_id_table")
     page_heading_id_table = load_file("page_heading_id_table")
@@ -65,24 +65,28 @@ def get_word_id(word):
 # %%
 wakati = MeCab.Tagger("-Owakati")
 remove_words = {"(", ")", "（", "）", "[", "]",
-                    "「", "」", "+", "-", "*", "$",
-                    "'", '"', "、", ".", "”", "’",
-                    ":", ";", "_", "/", "?", "!",
-                    "。", ",", "=", "＝"}
+                "「", "」", "+", "-", "*", "$",
+                "'", '"', "、", ".", "”", "’",
+                ":", ";", "_", "/", "?", "!",
+                "。", ",", "=", "＝"}
+
+
 def split_word(keyword):
     return [get_word_id(r) for r in wakati.parse(keyword).split() if r not in remove_words]
 
 
 # %%
 def set_score(result, word_id, table, score):
-    if word_id not in table: 
-        return 
+    if word_id not in table:
+        return
     pageset = table[word_id]
     for page in pageset:
         if page not in result:
             result[page] = 0
         result[page] += score
-def zenbun_search(result,keyword, score):
+
+
+def zenbun_search(result, keyword, score):
     global zenbun_table
     for page_id, zenbun in zenbun_table.items():
         if keyword in zenbun:
@@ -96,9 +100,9 @@ def scored_search(keyword):
     result = {}
     for word_id in split_word(keyword):
         if word_id is not None:
-            set_score(result,word_id, page_title_id_table, 30)
-            set_score(result,word_id, page_heading_id_table, 10)
-            set_score(result,word_id, page_desc_id_table, 1)
+            set_score(result, word_id, page_title_id_table, 30)
+            set_score(result, word_id, page_heading_id_table, 10)
+            set_score(result, word_id, page_desc_id_table, 1)
         zenbun_search(result, keyword, 1)
     return result
 
@@ -122,6 +126,8 @@ def sort_score(scores):
 
 # %%
 currenttime = 0
+
+
 def reload():
     global currenttime
     if time.time() - currenttime < 5:
@@ -138,11 +144,10 @@ def keyword_search(keyword):
     scores = scored_search(keyword)
     scores = [event_dict[s["event_id"]] for s in sort_score(scores)]
     return scores
-    
 
 
 # %%
-def filter_by_date(events, a,b):
+def filter_by_date(events, a, b):
     # pass if a<start<b or a<end<b
     a = datetime.fromisoformat(a)
     b = datetime.fromisoformat(b)
@@ -151,9 +156,9 @@ def filter_by_date(events, a,b):
         try:
             start = datetime.fromisoformat(e["start"])
             end = datetime.fromisoformat(e["end"])
-            if a<start<b or a<end<b:
+            if a < start < b or a < end < b:
                 result.append(e)
-        except: 
+        except:
             continue
     return result
 
@@ -168,10 +173,8 @@ def get_all():
 def search(keyword="", rangestart="2021-04-01", rangeend="2021-12-31"):
     events = []
     if len(keyword) == 0:
+        reload()
         events = get_all()
     else:
         events = keyword_search(keyword)
     return(filter_by_date(events, rangestart, rangeend))
-        
-
-
