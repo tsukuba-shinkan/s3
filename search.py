@@ -1,19 +1,14 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
-# %%
 import pickle
 import MeCab
 import time
 import random
 
 
-# %%
 def load_file(name):
     with open("wordtable/"+name+".pickle", "rb") as f:
         return pickle.load(f)
 
 
-# %%
 word_table = load_file("word_table")
 page_title_id_table = load_file("page_title_id_table")
 page_heading_id_table = load_file("page_heading_id_table")
@@ -22,7 +17,6 @@ zenbun_table = load_file("zenbun_table")
 page_dict = {}
 
 
-# %%
 def load_tables():
     global page_title_id_table
     global page_desc_id_table
@@ -42,7 +36,6 @@ def load_tables():
             page_dict[page["id"]] = page
 
 
-# %%
 def get_word_id(word):
     global word_table
     if word not in word_table["data"]:
@@ -50,20 +43,18 @@ def get_word_id(word):
     return word_table["data"][word]
 
 
-# %%
 wakati = MeCab.Tagger("-Owakati")
 remove_words = {"(", ")", "（", "）", "[", "]",
-                    "「", "」", "+", "-", "*", "$",
-                    "'", '"', "、", ".", "”", "’",
-                    ":", ";", "_", "/", "?", "!",
-                    "。", ",", "=", "＝"}
+                "「", "」", "+", "-", "*", "$",
+                "'", '"', "、", ".", "”", "’",
+                ":", ";", "_", "/", "?", "!",
+                "。", ",", "=", "＝"}
 
 
 def split_word(keyword):
     return [get_word_id(r) for r in wakati.parse(keyword).split() if r not in remove_words]
 
 
-# %%
 def set_score(result, word_id, table, score):
     if word_id not in table:
         return
@@ -83,7 +74,6 @@ def zenbun_search(result, keyword, score):
             result[page_id] += score
 
 
-# %%
 def scored_search(keyword):
     result = {}
     for word_id in split_word(keyword):
@@ -95,7 +85,6 @@ def scored_search(keyword):
     return result
 
 
-# %%
 def sort_score(scores):
     score_array = []
     for page_id, score in scores.items():
@@ -107,7 +96,6 @@ def sort_score(scores):
     return score_array
 
 
-# %%
 currenttime = 0
 
 
@@ -119,7 +107,6 @@ def reload():
     currenttime = time.time()
 
 
-# %%
 def search(keyword):
     if len(keyword) == 0:
         return
@@ -129,16 +116,15 @@ def search(keyword):
     return scores
 
 
-# %%
 def random_org(n=15, activity_type=0):
     with open("pages.pickle", "rb") as f:
         org = []
         for p in pickle.load(f):
-            if p["status"] != "publish"]:
+            if p["status"] != "publish":
                 continue
             if activity_type == 0 or str(activity_type) == str(p["activitytype"][0]):
                 org.append(p)
-        return random.sample(org, k=n)
-
-
-# %%
+        if n < len(org):
+            return random.sample(org, k=n)
+        else:
+            return org
