@@ -23,6 +23,6 @@ RUN pip3 install beautifulsoup4==4.9.3 \
 
 ADD . /workdir
 WORKDIR /workdir
-
+RUN mkdir wordtable && mkdir wordtable_event
 EXPOSE 8000
-CMD ["uvicorn","app:app","--host","0.0.0.0"]
+CMD ["./entrypoint.sh"]

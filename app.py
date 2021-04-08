@@ -52,14 +52,10 @@ def randomOrg(n: int = 15, activity: str = ""):
 
 
 def syncjob():
+
     subprocess.run(["python3", "download.py"])
     subprocess.run(["python3", "gen_wordtable.py"])
     subprocess.run(["python3", "gen_wordtable_event.py"])
-
-
-@app.on_event("startup")
-def startup_event():
-    syncjob()
 
 
 @app.get("/sync")

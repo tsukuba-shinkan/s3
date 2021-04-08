@@ -1,0 +1,8 @@
+pages.pickle
+wordtable/
+wordtable_event/
+nohup.out
+launch-jupyter.sh
+email/
+.vscode
+.ipynb_checkpoints/
