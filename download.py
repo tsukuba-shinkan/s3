@@ -4,6 +4,7 @@
 import requests as rq
 import csv
 import pickle
+import os
 
 
 # %%
@@ -17,14 +18,16 @@ def wpFetch(url):
 
 
 # %%
-q = s.post("https://www.stb.tsukuba.ac.jp/~shinkan-web/orgadmin/wp-login.php", 
-          data={"log": "github_crawler", "pwd": "v$ge)M%nbZ^buACHJQfj#FSJ", "testcookie": "0"},
-         headers = {'user-agent': 'FireFox'}
-)
+q = s.post("https://www.stb.tsukuba.ac.jp/~shinkan-web/orgadmin/wp-login.php",
+           data={"log": "github_crawler",
+                 "pwd": os.environ["CRAWLER_PASSWORD"], "testcookie": "0"},
+           headers={'user-agent': 'FireFox'}
+           )
 
 
 # %%
-pages = wpFetch("/v2/pages&status=draft,publish&per_page=100&page=1") + wpFetch("/v2/pages&status=draft,publish&per_page=100&page=2") + wpFetch("/v2/pages&status=draft,publish&per_page=100&page=3")
+pages = wpFetch("/v2/pages&status=draft,publish&per_page=100&page=1") + wpFetch(
+    "/v2/pages&status=draft,publish&per_page=100&page=2") + wpFetch("/v2/pages&status=draft,publish&per_page=100&page=3")
 
 
 # %%
@@ -34,5 +37,3 @@ len(pages)
 # %%
 with open("pages.pickle", "wb") as f:
     pickle.dump(pages, f)
-
-
