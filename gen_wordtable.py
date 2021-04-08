@@ -79,7 +79,7 @@ def parse_page(page):
 # %%
 pages = []
 with open("pages.pickle", "rb") as f:
-    pages = pickle.load(f)
+    pages = pickle.load(f)["data"]
 for page in pages:
     parse_page(page)
 

@@ -38,7 +38,7 @@ def load_tables():
 
     global event_dict
     with open("pages.pickle", "rb") as f:
-        for page in pickle.load(f):
+        for page in pickle.load(f)["data"]:
             page_id = page["id"]
             if "title" not in page["event"]:
                 continue

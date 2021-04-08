@@ -38,7 +38,7 @@ def load_tables():
     zenbun_table = load_file("zenbun_table")
 
     with open("pages.pickle", "rb") as f:
-        for page in pickle.load(f):
+        for page in pickle.load(f)["data"]:
             page_dict[page["id"]] = page
 
 

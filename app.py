@@ -51,15 +51,30 @@ def randomOrg(n: int = 15, activity: str = ""):
     return search.random_org(n, activity_type=activity_type)
 
 
-@app.get("/sync")
-def sync():
+def syncjob():
     subprocess.run(["python3", "download.py"])
     subprocess.run(["python3", "gen_wordtable.py"])
     subprocess.run(["python3", "gen_wordtable_event.py"])
+
+
+@app.on_event("startup")
+def startup_event():
+    syncjob()
+
+
+@app.get("/sync")
+def sync():
+    syncjob()
     return {"success": True}
 
 
 @app.get("/all")
 def all():
     with open("pages.pickle", "rb") as f:
-        return pickle.load(f)
+        return pickle.load(f)["data"]
+
+
+@app.get("/timestamp")
+def all():
+    with open("pages.pickle", "rb") as f:
+        return pickle.load(f)["timestamp"]

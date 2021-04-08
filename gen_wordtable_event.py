@@ -58,8 +58,7 @@ class Text():
 # %%
 pages = []
 with open("pages.pickle", "rb") as f:
-    pages = pickle.load(f)
-len(pages)
+    pages = pickle.load(f)["data"]
 
 
 # %%

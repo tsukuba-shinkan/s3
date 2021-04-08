@@ -5,6 +5,7 @@ import requests as rq
 import csv
 import pickle
 import os
+import time
 
 
 # %%
@@ -36,4 +37,4 @@ len(pages)
 
 # %%
 with open("pages.pickle", "wb") as f:
-    pickle.dump(pages, f)
+    pickle.dump({"data": pages, "timestamp": time.time()}, f)
