@@ -20,7 +20,7 @@ def wpFetch(url):
 
 # %%
 q = s.post("https://www.stb.tsukuba.ac.jp/~shinkan-web/orgadmin/wp-login.php",
-           data={"log": "github_crawler",
+           data={"log": os.environ["CRAWLER_USERID"],
                  "pwd": os.environ["CRAWLER_PASSWORD"], "testcookie": "0"},
            headers={'user-agent': 'FireFox'}
            )

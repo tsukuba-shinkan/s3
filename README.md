@@ -6,7 +6,7 @@ Sloppy Shinkan Search
 
 ```
 docker pull yukijs/shinkan-s3
-docker run -p 80:8000 -e CRAWLER_PASSWORD="password here" --restart=always -d --name s3 yukijs/shinkan-s3
+docker run -p 80:8000 -e CRAWLER_USERID="userid here" -e CRAWLER_PASSWORD="password here" --restart=always -d --name s3 yukijs/shinkan-s3
 ```
 
 # エンドポイント
