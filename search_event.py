@@ -57,6 +57,7 @@ def load_tables():
 # %%
 def get_word_id(word):
     global word_table
+    word = word.lower()
     if word not in word_table["data"]:
         return None
     return word_table["data"][word]
@@ -75,6 +76,10 @@ def split_word(keyword):
     return [get_word_id(r) for r in wakati.parse(keyword).split() if r not in remove_words]
 
 
+def split_word_str(keyword):
+    return [r for r in wakati.parse(keyword).split() if r not in remove_words]
+
+
 # %%
 def set_score(result, word_id, table, score):
     if word_id not in table:
@@ -86,13 +91,18 @@ def set_score(result, word_id, table, score):
         result[page] += score
 
 
+# %%
 def zenbun_search(result, keyword, score):
     global zenbun_table
+    words_str = split_word_str(keyword)
     for page_id, zenbun in zenbun_table.items():
-        if keyword in zenbun:
+        for word in words_str:
+            cnt = zenbun.count(word)
+            if cnt == 0:
+                continue
             if page_id not in result:
                 result[page_id] = 0
-            result[page_id] += score
+            result[page_id] += score * cnt
 
 
 # %%
@@ -103,7 +113,7 @@ def scored_search(keyword):
             set_score(result, word_id, page_title_id_table, 30)
             set_score(result, word_id, page_heading_id_table, 10)
             set_score(result, word_id, page_desc_id_table, 1)
-        zenbun_search(result, keyword, 1)
+    zenbun_search(result, keyword, 1)
     return result
 
 

@@ -3,3 +3,4 @@
 **/*.pickle
 nohup.out
 launch-jupyter.sh
+email/

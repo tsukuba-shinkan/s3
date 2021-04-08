@@ -7,11 +7,13 @@ import MeCab
 
 
 # %%
-word_table = {} # word(string) -> word_id(int)
+word_table = {}  # word(string) -> word_id(int)
 word_count = 0
-page_title_id_table = {} # word_id in title(int) -> set of page_id(set<int>)
-page_heading_id_table = {} # word_id in heading(int) -> set of page_id(set<int>)
-page_desc_id_table = {} # word_id in description(int) -> set of page_id(set<int>)
+page_title_id_table = {}  # word_id in title(int) -> set of page_id(set<int>)
+# word_id in heading(int) -> set of page_id(set<int>)
+page_heading_id_table = {}
+# word_id in description(int) -> set of page_id(set<int>)
+page_desc_id_table = {}
 zenbun_table = {}
 
 
@@ -19,7 +21,7 @@ zenbun_table = {}
 def get_word_id(word):
     global word_table
     global word_count
-    
+    word = word.lower()
     if word in word_table:
         return word_table[word]
     word_table[word] = word_count
@@ -30,19 +32,24 @@ def get_word_id(word):
 # %%
 wakati = MeCab.Tagger("-Owakati")
 remove_words = {"(", ")", "（", "）", "[", "]",
-                    "「", "」", "+", "-", "*", "$",
-                    "'", '"', "、", ".", "”", "’",
-                    ":", ";", "_", "/", "?", "!",
-                    "。", ",", "=", "＝"}
+                "「", "」", "+", "-", "*", "$",
+                "'", '"', "、", ".", "”", "’",
+                ":", ";", "_", "/", "?", "!",
+                "。", ",", "=", "＝"}
+
+
 class Text():
     def __init__(self, text):
         self.raw = text
-        self.wakati = [get_word_id(r) for r in wakati.parse(text).split() if r not in remove_words]
+        self.wakati = [get_word_id(r) for r in wakati.parse(
+            text).split() if r not in remove_words]
+
     def __repr__(self):
         return str(self.wakati)
+
     def insert_to_table(self, table, page_id):
         for word_id in self.wakati:
-            if word_id not in table: 
+            if word_id not in table:
                 table[word_id] = set()
             table[word_id].add(page_id)
         return self
@@ -72,15 +79,17 @@ def parse_page(page):
         title.insert_to_table(page_title_id_table, event_id)
         zenbun += title.raw
 
-        descHtml = BeautifulSoup(page["event"]["description"][i], "html.parser")
-        descHeadings = [Text(h.get_text()).insert_to_table(page_heading_id_table, event_id) for h in descHtml.select("h1,h2,h3,h4,h5,h6")]
+        descHtml = BeautifulSoup(
+            page["event"]["description"][i], "html.parser")
+        descHeadings = [Text(h.get_text()).insert_to_table(
+            page_heading_id_table, event_id) for h in descHtml.select("h1,h2,h3,h4,h5,h6")]
         zenbun += "".join([h.raw for h in descHeadings])
-        
+
         descText = Text(descHtml.get_text())
         descText.insert_to_table(page_desc_id_table, event_id)
         zenbun = descText.raw
 
-        zenbun_table[event_id] = zenbun
+        zenbun_table[event_id] = zenbun.lower()
 
 
 # %%
@@ -95,7 +104,7 @@ def write_json(path, data):
 
 
 # %%
-write_json("word_table", {"data":word_table, "count": word_count})
+write_json("word_table", {"data": word_table, "count": word_count})
 write_json("page_title_id_table", page_title_id_table)
 write_json("page_heading_id_table", page_heading_id_table)
 write_json("page_desc_id_table", page_desc_id_table)
@@ -103,6 +112,3 @@ write_json("zenbun_table", zenbun_table)
 
 
 # %%
-
-
-
