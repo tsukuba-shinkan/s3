@@ -144,7 +144,7 @@ def search(keyword):
 def random_org(n=15, activity_type=0):
     with open("pages.pickle", "rb") as f:
         org = []
-        for p in pickle.load(f):
+        for p in pickle.load(f)["data"]:
             if p["status"] != "publish":
                 continue
             if activity_type == 0 or str(activity_type) == str(p["activitytype"][0]):

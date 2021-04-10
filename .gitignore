@@ -4,3 +4,4 @@
 nohup.out
 launch-jupyter.sh
 email/
+__pycache__
